@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
 	context = zmq.Context()
 	# open a req port to talk to pupil
-	addr = '127.0.0.1'  # remote ip or localhost
+	addr = '10.42.0.1'  # remote ip or localhost
 	req_port = "50020"  # same as in the pupil remote gui
 	req = context.socket(zmq.REQ)
 	req.setsockopt(zmq.LINGER, 0)
