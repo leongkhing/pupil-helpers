@@ -14,6 +14,7 @@ import zmq
 from msgpack import loads
 import subprocess as sp
 from platform import system
+import math
 
 try:
     from pymouse import PyMouse
@@ -26,6 +27,9 @@ except ImportError:
     """
     print(msg)
     exit(1)
+
+def distance(x1,y1,x2,y2):
+    return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
 
 m = PyMouse()
@@ -46,7 +50,18 @@ sub = context.socket(zmq.SUB)
 sub.connect("tcp://{}:{}".format(addr, sub_port))
 sub.setsockopt_string(zmq.SUBSCRIBE, f"surfaces.{surface_name}")
 
+# add socket for eye gaze blinking
+
+
+# 
+
 smooth_x, smooth_y = 0.5, 0.5
+distance_max = 30
+x_list = []
+y_list = []
+start_time = 0
+x_mean = 1000000
+y_mean = 1000000
 
 # screen size
 x_dim, y_dim = m.screen_size()
@@ -78,6 +93,37 @@ while True:
             # PyMouse or MacOS bugfix - can not go to extreme corners because of hot corners?
             x = min(x_dim - 10, max(10, x))
             y = min(y_dim - 10, max(10, y))
+            print(distance(x,y,x_mean,y_mean))
 
             # print "%s,%s\n" %(x,y)
-            m.move(int(x), int(y))
+            # change based on hte position of eyegaze after being fixed for a certain amount of time
+            if len(x_list) == 0 and len(y_list) ==0:
+                x_list.append(x)
+                y_list.append(y)
+                start_time = gaze_position['timestamp']
+                x_mean = sum(x_list)/len(x_list)
+                y_mean = sum(y_list)/len(y_list)
+
+            elif distance(x, y, x_mean, y_mean) < distance_max:
+                x_list.append(x)
+                y_list.append(y)
+                x_mean = sum(x_list)/len(x_list)
+                y_mean = sum(y_list)/len(y_list)
+                duration = gaze_position['timestamp'] - start_time
+                if duration > 1.0:
+                    m.move(int(x_mean), int(y_mean))
+                    x_list.clear()
+                    y_list.clear()
+                    start_time = 0
+                    duration = 0
+                    x_mean = 100000
+                    y_mean = 100000
+            else:
+                x_list.clear()
+                y_list.clear()
+                start_time = 0
+                duration = 0
+                x_mean = 100000
+                y_mean = 100000
+            
+
