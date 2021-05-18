@@ -3,7 +3,6 @@ import zmq
 from msgpack import unpackb, packb, loads
 import numpy as np
 import cv2
-import pyttsx3
 
 from pymouse import PyMouse
 
