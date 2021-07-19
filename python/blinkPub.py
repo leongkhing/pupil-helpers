@@ -42,11 +42,11 @@ if __name__ == "__main__":
 	while True:
 		#ret, frame = cap.read()
 		try:
-			print("loop")
+			#print("loop")
 			topic = sub.recv_string()
 			msg = sub.recv()
 			msg = loads(msg, raw=False)
-			print("\n{}: {}".format(topic,msg))
+			#print("\n{}: {}".format(topic,msg))
 			if msg['type'] == 'onset' and not eyeCloseFlag:
 				eyeCloseFlag = True
 				startTime = msg['timestamp']
@@ -54,13 +54,14 @@ if __name__ == "__main__":
 				eyeCloseFlag = False
 				endTime = msg['timestamp']
 				duration = endTime - startTime
-				if duration > 2.0 and duration < 3.0:
+				print(duration)
+				if duration > 1.5 and duration < 3.0:
 					m.click(m.position()[0], m.position()[1])
-				else:
+				else:					
 					endTime = 0
 					startTime = 0
 					duration = 0
-				
+						
 		except KeyboardInterrupt:
 			break
 		
