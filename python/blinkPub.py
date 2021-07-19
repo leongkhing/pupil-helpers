@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
 	context = zmq.Context()
 	# open a req port to talk to pupil
-	addr = '127.0.0.1'  # remote ip or localhost
+	addr = '192.168.1.202'  # remote ip or localhost
 	req_port = "50020"  # same as in the pupil remote gui
 	req = context.socket(zmq.REQ)
 	req.setsockopt(zmq.LINGER, 0)
@@ -46,7 +46,6 @@ if __name__ == "__main__":
 			topic = sub.recv_string()
 			msg = sub.recv()
 			msg = loads(msg, raw=False)
-			#print("\n{}: {}".format(topic,msg))
 			if msg['type'] == 'onset' and not eyeCloseFlag:
 				eyeCloseFlag = True
 				startTime = msg['timestamp']
@@ -57,6 +56,7 @@ if __name__ == "__main__":
 				print(duration)
 				if duration > 1.5 and duration < 3.0:
 					m.click(m.position()[0], m.position()[1])
+					m.release(m.position()[0], m.position()[1])
 				else:					
 					endTime = 0
 					startTime = 0

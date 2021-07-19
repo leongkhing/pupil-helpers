@@ -37,7 +37,7 @@ m = PyMouse()
 
 context = zmq.Context()
 # open a req port to talk to pupil
-addr = "127.0.0.1"  # remote ip or localhost
+addr = "192.168.1.202"  # remote ip or localhost
 req_port = "50020"  # same as in the pupil remote gui
 req = context.socket(zmq.REQ)
 req.connect("tcp://{}:{}".format(addr, req_port))
@@ -56,7 +56,7 @@ sub.setsockopt_string(zmq.SUBSCRIBE, f"surfaces.{surface_name}")
 # 
 
 smooth_x, smooth_y = 0.5, 0.5
-distance_max = 30
+distance_max = 50
 x_list = []
 y_list = []
 start_time = 0
@@ -94,7 +94,7 @@ while True:
             x = min(x_dim - 10, max(10, x))
             y = min(y_dim - 10, max(10, y))
             print(distance(x,y,x_mean,y_mean))
-
+            d_xy = distance(x,y,x_mean,y_mean)
             # print "%s,%s\n" %(x,y)
             # change based on hte position of eyegaze after being fixed for a certain amount of time
             if len(x_list) == 0 and len(y_list) ==0:
@@ -104,7 +104,10 @@ while True:
                 x_mean = sum(x_list)/len(x_list)
                 y_mean = sum(y_list)/len(y_list)
 
-            elif distance(x, y, x_mean, y_mean) < distance_max:
+            elif d_xy > 1000:
+                print("skip")
+                continue
+            elif d_xy < distance_max:
                 x_list.append(x)
                 y_list.append(y)
                 x_mean = sum(x_list)/len(x_list)
@@ -125,5 +128,6 @@ while True:
                 duration = 0
                 x_mean = 100000
                 y_mean = 100000
+                print("clear")
             
 
