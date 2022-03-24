@@ -20,3 +20,18 @@ For more information about plugin development, check out the [Plugin Guide](http
 ## Contributing
 
 Pull Requests to this repo should be revisions of existing code. New examples should be referenced in the [pupil-community](https://github.com/pupil-labs/pupil-community) repository.
+
+
+
+
+# For Eye Gaze interface
+1. Install [Pupil](https://github.com/pupil-labs/pupil)
+2. Run `Pupil`
+3. Place ArUCo markers at the corners of the screen of the target computer.
+4. Define a surface with the name "screen" using the `Surface Tracker` from `Pupil`.
+5. `python python/blinkPub.py` : register a click when user close his eyes for 2 to 3 seconds.
+6. `python python/mouse_control.py` : move the mouse cursor to user gaze point, when the user gaze fixed at a position on the screen for 10 seconds.
+
+### note: 
+- Ensure that the ip for both `blinkPub.py` and `mouse_control.py` are set to the computer that is running `Pupil`.
+- Ensure that the `Network API`, `Surface Tracker` and `Blink Detector` are enabled when running `Pupil`.
